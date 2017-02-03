@@ -1,0 +1,4 @@
+./programA: snoozed for 7 seconds
+Error executing binary: ./void
+./programB: Result is 1836
+No more commands.

@@ -1,0 +1,114 @@
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <unistd.h>
+#include <pthread.h>
+
+#include "udp_comm.h"
+#include "server_functions.h"
+
+#define BUFSIZE 1024
+#define MAX_USERS 1024
+
+struct requestInformation {
+	struct sockaddr_in* clientAddr;
+	char* request;
+};
+
+struct requestInformation* newRequestInformation() {
+	struct requestInformation* req = malloc (sizeof(struct requestInformation));
+	req->clientAddr = malloc(sizeof(struct sockaddr_in));
+	req->request = malloc(sizeof(char) * BUFSIZE);
+	return req;
+}
+
+void freeRequestInformation(struct requestInformation* req) {
+	free(req->clientAddr);
+	free(req->request);
+	free(req);
+}
+
+
+void* threadRoutine(void* arg){
+	struct requestInformation* req = (struct requestInformation*) arg;
+	char* command = strtok(req->request," ");
+	char* end1;
+	char* end2;
+	char* result;
+	if(strcmp(command, "functionA") == 0){
+		char* argPointer = strtok(NULL, " ");
+		int arg1 = strtol(argPointer, end1, 10);
+		if(strtok(NULL, " ") != NULL || end1 == argPointer){
+			result = "Invalid operation";
+		}else{
+			functionA(arg1, result);
+		}
+	}else if(strcmp(command, "functionB") == 0){
+		char* argPointer1 = strtok(NULL, " ");
+		char* argPointer2 = strtok(NULL, " ");
+		int arg1 = strtol(argPointer1, end1, 10);
+		int arg2 = strtol(argPointer2, end2, 10);	
+		if(strtok(NULL, " ") != NULL || end1 == argPointer1 || end2 == argPointer2){
+			result = "Invalid operation";
+		}else{
+			functionB(arg1, arg2, result);
+		}
+	}else if(strcmp(command, "functionC") == 0){
+		char* arg1;
+		arg = fgets(arg1, BUFSIZE, (req->request+10));
+		if(arg1 == NULL){
+			result = "Invalid operation";
+		}else{
+			functionC(arg, result);
+		}
+	}
+	return (void*) result;
+}
+
+int server(int port){
+	//Criar uma socket upd num socket aleatorio entre 1025 e 50000
+	int sock = UDP_Open(random_number(1025,50000));
+	if(sock == -1) {
+		perror("Erro a criar socket: ");
+		return 1;
+	}
+	struct sockaddr_in endereco;
+	if(UDP_FillSockAddr(&endereco, "localhost", port) == -1) {
+		printf("Erro a preencher o endereço de chegada\n");
+		return 1;
+	}
+
+	struct requestInformation* req;
+
+	pthread_t newThread;
+	int start = 0;
+	int end = 0;
+
+	char* result[BUFSIZE];
+	//open server
+	//Main cycle of the server.
+	while(1) {
+		//Prepara as estruturas em memória para receber um novo pedido
+		req = newRequestInformation();
+		UDP_Read(sock, &endereco, req, BUFSIZE);
+		pthread_create(newThread, NULL, threadRoutine, (void*)req);
+		pthread_detach(newThread);
+	}
+	return 0;
+}
+
+int main( int argc, char *argv[]){
+	int port;
+
+	if( argc == 2){
+		port = atoi(argv[1]);
+	} else {
+		printf("Usage: %s port\n", argv[0]);
+		return 1;
+	}
+
+	return server(port);
+}

@@ -1,0 +1,3 @@
+./programA: snoozed for 7 seconds
+./programB: Result is 1836
+No more commands.

@@ -1,0 +1,14 @@
+./programA
+1
+7
+./void
+4
+First Argument
+Second Argument
+Third Argument
+Fourth Argument
+./programB
+2
+54
+34
+

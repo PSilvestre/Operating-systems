@@ -1,0 +1,8 @@
+./programA
+1
+7
+./programB
+2
+54
+34
+
