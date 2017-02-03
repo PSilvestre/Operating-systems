@@ -1,0 +1,8 @@
+/root/fsov2/ramdisk/my_c_ramdisk.c:90:19: warning: missing terminating " character
+/root/fsov2/ramdisk/my_c_ramdisk.c: In function ‘init_ramdisk’:
+/root/fsov2/ramdisk/my_c_ramdisk.c:90: error: missing terminating " character
+/root/fsov2/ramdisk/my_c_ramdisk.c:91: error: expected ‘)’ before ‘mem_start’
+/root/fsov2/ramdisk/my_c_ramdisk.c:99: error: expected ‘;’ before ‘}’ token
+make[2]: *** [/root/fsov2/ramdisk/my_c_ramdisk.o] Error 1
+make[1]: *** [_module_/root/fsov2/ramdisk] Error 2
+make: *** [all] Error 2
